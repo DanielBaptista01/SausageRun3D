@@ -1,0 +1,39 @@
+SAUSAGE RUN 3D — ETAPA 6: IMERSAO EM PRIMEIRA PESSOA
+Unity 6 | complementa as etapas 1 a 5 sem substituir scripts existentes.
+
+PASSOS
+1. Salve uma copia de seguranca do projeto (ou faca commit no Git).
+2. PARE o modo Play.
+3. Extraia o conteudo do ZIP na raiz do seu projeto:
+   D:\unity_games\SausageRun3D
+4. Volte para a Unity e aguarde a compilacao.
+5. Abra a cena Sala.
+6. Menu superior: Sausage Run > 5 - Aplicar imersao do Scooby
+7. Salve a cena (Ctrl+S).
+8. Aperte Play e teste andar, correr, parar, escalar, pegar a bolinha e vencer.
+
+O QUE INSTALA
+- ScoobyCameraImersao.cs na CameraScooby: balanco muito leve enquanto anda/corre.
+- FocinhoScooby_Provisorio dentro da CameraScooby, com orelhas, focinho e nariz
+  feitos de objetos 3D simples, SEM colliders.
+- Tres materiais de cor sob _SausageRun3D/Materials.
+
+NAO ALTERA
+- ScoobyController.cs, ScoobyEscalada.cs, MariaAI.cs, BolinhaColetavel.cs
+  ou SausageRunGameManager.cs.
+- Geometria da sala, locais dos moveis ou a NavMesh.
+
+COMO PERSONALIZAR OU DESFAZER
+- Para esconder o focinho, desmarque FocinhoScooby_Provisorio na Hierarchy.
+- Para desligar a oscilacao, desmarque Scooby Camera Imersao no Inspector.
+- Para ajustar movimento da cabeca, selecione CameraScooby e altere
+  Amplitude Andando / Amplitude Correndo.
+- Para remover por completo, exclua FocinhoScooby_Provisorio e o componente
+  Scooby Camera Imersao; o jogo voltara ao comportamento anterior.
+
+NOTAS
+- Sao formas provisorias, nao um modelo anatomico de cachorro.
+- O movimento de camera so altera a posicao local da CameraScooby, nunca
+  sua rotacao, evitando conflito com o controle do mouse existente.
+- Se o menu nao aparecer, verifique erros vermelhos na aba Console.
+- NAO execute novamente o menu '1 - Criar cenario inicial'.

@@ -1,0 +1,11 @@
+Sausage Run 3D - Controlador Scooby
+
+1. Extraia o ZIP na pasta RAIZ do projeto Unity, como D:\unity_games\SausageRun3D.
+2. Confirme o arquivo Assets/_SausageRun3D/Scripts/Player/ScoobyController.cs.
+3. Na Unity, selecione o GameObject Scooby (nao CameraScooby).
+4. Inspector > Add Component > Scooby Controller.
+5. O GameObject Scooby deve ter Character Controller, Scooby Controller e CameraScooby como filha.
+6. Pressione Play, clique na aba Game, teste WASD, mouse, Shift, Espaco e Esc.
+7. Se nao compilar, abra Window > General > Console e confira erros vermelhos.
+
+OBS: nao coloque esse script na pasta Editor. Scripts em Editor nao podem ser adicionados aos objetos do jogo em runtime.

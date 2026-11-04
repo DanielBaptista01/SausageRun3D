@@ -1,0 +1,385 @@
+using System;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.InputSystem;
+
+// IA independente dos scripts de movimentacao e escalada do Scooby.
+// Unity 6 - necessita de NavMesh criado pelo pacote AI Navigation.
+[RequireComponent(typeof(NavMeshAgent))]
+public class MariaAI : MonoBehaviour
+{
+    public enum EstadoMaria
+    {
+        Patrulhando,
+        Investigando,
+        Perseguindo,
+        Procurando
+    }
+
+    [Header("Referencia do jogador")]
+    public Transform scooby;
+
+    [Header("Visao e audicao")]
+    [Min(1f)] public float alcanceVisao = 8f;
+    [Range(20f, 180f)] public float anguloVisao = 110f;
+    [Min(0f)] public float alcancePassos = 2.5f;
+    [Min(0f)] public float alcanceCorrida = 6f;
+    [Min(0f)] public float velocidadeMinimaCorrida = 3.2f;
+    [Min(0.1f)] public float alturaOlhosMaria = 1.25f;
+
+    [Header("Movimentacao da Maria")]
+    [Min(0.1f)] public float velocidadePatrulha = 1.5f;
+    [Min(0.1f)] public float velocidadePerseguicao = 3.3f;
+    [Min(0.5f)] public float tempoProcurando = 3.5f;
+    [Min(0.2f)] public float segundosAtePerderScooby = 0.8f;
+
+    [Header("Limites da sala (corredor e seguro)")]
+    public float limiteFrontalDaSalaZ = -4.7f;
+    public float limiteLateralX = 8.6f;
+    public float limiteFundoDaSalaZ = 8.7f;
+    [Min(0.1f)] public float margemParaDestino = 0.45f;
+
+    [Header("Teste")]
+    public bool mostrarEstadoNaTela = true;
+    public EstadoMaria estadoAtual = EstadoMaria.Patrulhando;
+
+    private NavMeshAgent agente;
+    private CharacterController controladorScooby;
+    private Behaviour scriptMovimento;
+    private Behaviour scriptEscalada;
+    private Vector3 posicaoInicialMaria;
+    private Vector3 posicaoInicialScooby;
+    private Vector3 ultimaPosicaoScooby;
+    private Vector3 ultimaPosicaoConhecida;
+
+    private float tempoSemEnxergar;
+    private float tempoRestanteProcura;
+    private float proximaPercepcao;
+    private float proximaAtualizacaoCaminho;
+    private int indicePatrulha;
+    private bool capturado;
+    private bool avisoNavMeshMostrado;
+
+    // Coordenadas globais, editaveis no Inspector. A Etapa 6B cria
+    // rotas em torno dos novos moveis; a NavMesh ajusta cada destino.
+    [Header("Pontos da patrulha ampliada")]
+    public Vector3[] pontosPatrulha =
+    {
+        new Vector3(-4f, 0f, -3.2f),
+        new Vector3(-4f, 0f, 3.2f),
+        new Vector3(4f, 0f, 3.2f),
+        new Vector3(4f, 0f, -3.2f)
+    };
+
+    private void Awake()
+    {
+        agente = GetComponent<NavMeshAgent>();
+        if (scooby == null)
+        {
+            GameObject jogador = GameObject.Find("Scooby");
+            if (jogador != null) scooby = jogador.transform;
+        }
+    }
+
+    private void Start()
+    {
+        posicaoInicialMaria = transform.position;
+        if (scooby == null)
+        {
+            Debug.LogError("MariaAI: arraste o objeto Scooby para o campo 'Scooby'.", this);
+            enabled = false;
+            return;
+        }
+
+        posicaoInicialScooby = scooby.position;
+        ultimaPosicaoScooby = scooby.position;
+        controladorScooby = scooby.GetComponent<CharacterController>();
+        scriptMovimento = scooby.GetComponent("ScoobyController") as Behaviour;
+        scriptEscalada = scooby.GetComponent("ScoobyEscalada") as Behaviour;
+
+        // Evita o erro 'SetDestination can only be called on an active agent'
+        // caso a Maria tenha ficado um pouco fora da area navegavel.
+        if (!agente.isOnNavMesh &&
+            NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            agente.Warp(hit.position);
+        }
+
+        if (agente.isOnNavMesh)
+            IniciarPatrulha();
+    }
+
+    private void Update()
+    {
+        if (capturado)
+        {
+            if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+                ReiniciarTentativa();
+            return;
+        }
+
+        if (scooby == null) return;
+
+        if (!agente.isOnNavMesh)
+        {
+            if (!avisoNavMeshMostrado)
+            {
+                Debug.LogWarning(
+                    "MariaAI: Maria nao esta sobre uma NavMesh. " +
+                    "Selecione Sala_NavMesh e clique Bake no Inspector.", this);
+                avisoNavMeshMostrado = true;
+            }
+            return;
+        }
+
+        float dt = Mathf.Max(Time.deltaTime, 0.0001f);
+        float velocidadeScooby = Vector3.Distance(scooby.position, ultimaPosicaoScooby) / dt;
+        ultimaPosicaoScooby = scooby.position;
+
+        if (Time.time >= proximaPercepcao)
+        {
+            proximaPercepcao = Time.time + 0.12f;
+            AtualizarPercepcao(velocidadeScooby);
+        }
+
+        AtualizarComportamento();
+    }
+
+    private bool ScoobyDentroDaSala()
+    {
+        // A janela esta em Z=-5. Ao fugir pelo corredor, Scooby fica seguro.
+        return scooby.position.z >= limiteFrontalDaSalaZ &&
+               Mathf.Abs(scooby.position.x) <= limiteLateralX &&
+               scooby.position.z <= limiteFundoDaSalaZ;
+    }
+
+    private void AtualizarPercepcao(float velocidadeScooby)
+    {
+        bool dentro = ScoobyDentroDaSala();
+        bool enxergou = dentro && ConsegueEnxergarScooby();
+
+        if (enxergou)
+        {
+            estadoAtual = EstadoMaria.Perseguindo;
+            ultimaPosicaoConhecida = scooby.position;
+            tempoSemEnxergar = 0f;
+            agente.speed = velocidadePerseguicao;
+            if (Time.time >= proximaAtualizacaoCaminho)
+            {
+                IrAte(ultimaPosicaoConhecida);
+                proximaAtualizacaoCaminho = Time.time + 0.18f;
+            }
+            return;
+        }
+
+        if (estadoAtual == EstadoMaria.Perseguindo)
+        {
+            tempoSemEnxergar += 0.12f;
+            if (tempoSemEnxergar >= segundosAtePerderScooby)
+            {
+                estadoAtual = EstadoMaria.Investigando;
+                agente.speed = velocidadePatrulha;
+                IrAte(ultimaPosicaoConhecida);
+            }
+            return;
+        }
+
+        if (!dentro || velocidadeScooby < 0.3f) return;
+
+        float distancia = Vector3.Distance(transform.position, scooby.position);
+        float alcance = velocidadeScooby >= velocidadeMinimaCorrida
+            ? alcanceCorrida : alcancePassos;
+
+        if (distancia <= alcance)
+        {
+            ultimaPosicaoConhecida = scooby.position;
+            estadoAtual = EstadoMaria.Investigando;
+            agente.speed = velocidadePatrulha;
+            IrAte(ultimaPosicaoConhecida);
+        }
+    }
+
+    private bool ConsegueEnxergarScooby()
+    {
+        Vector3 origem = transform.position + Vector3.up * alturaOlhosMaria;
+        Vector3 olhosScooby = scooby.position + Vector3.up * 0.45f;
+        Vector3 direcao = olhosScooby - origem;
+        float distancia = direcao.magnitude;
+
+        if (distancia > alcanceVisao || distancia < 0.01f) return false;
+        if (Vector3.Angle(transform.forward, direcao) > anguloVisao * 0.5f)
+            return false;
+
+        return LinhaDeVisaoLivre(origem, olhosScooby);
+    }
+
+    private bool LinhaDeVisaoLivre(Vector3 origem, Vector3 destino)
+    {
+        Vector3 direcao = destino - origem;
+        float distancia = direcao.magnitude;
+        if (distancia <= 0.01f) return false;
+
+        // RaycastAll permite ignorar os colliders que eventualmente fazem parte
+        // do modelo da propria Maria. O primeiro obstaculo real decide a visao.
+        RaycastHit[] hits = Physics.RaycastAll(
+            origem, direcao / distancia, distancia + 0.15f,
+            ~0, QueryTriggerInteraction.Ignore);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                continue;
+
+            if (hit.transform == scooby || hit.transform.IsChildOf(scooby))
+                return true;
+
+            return false; // Parede, sofa ou qualquer outro obstaculo bloqueia.
+        }
+
+        return false;
+    }
+
+    private void AtualizarComportamento()
+    {
+        float distanciaHorizontal = Vector2.Distance(
+            new Vector2(transform.position.x, transform.position.z),
+            new Vector2(scooby.position.x, scooby.position.z));
+
+        // Captura so quando proximo, dentro da sala e sem atravesar moveis.
+        if (ScoobyDentroDaSala() && distanciaHorizontal < 0.78f &&
+            Mathf.Abs(scooby.position.y - transform.position.y) < 1f &&
+            LinhaDeVisaoLivre(transform.position + Vector3.up * alturaOlhosMaria,
+                             scooby.position + Vector3.up * 0.45f))
+        {
+            Capturar();
+            return;
+        }
+
+        switch (estadoAtual)
+        {
+            case EstadoMaria.Patrulhando:
+                if (pontosPatrulha != null && pontosPatrulha.Length > 0 && ChegouAoDestino())
+                {
+                    indicePatrulha = (indicePatrulha + 1) % pontosPatrulha.Length;
+                    IrAte(pontosPatrulha[indicePatrulha]);
+                }
+                break;
+
+            case EstadoMaria.Investigando:
+                if (ChegouAoDestino())
+                {
+                    estadoAtual = EstadoMaria.Procurando;
+                    tempoRestanteProcura = tempoProcurando;
+                    agente.ResetPath();
+                }
+                break;
+
+            case EstadoMaria.Procurando:
+                tempoRestanteProcura -= Time.deltaTime;
+                if (tempoRestanteProcura <= 0f)
+                    IniciarPatrulha();
+                break;
+        }
+    }
+
+    private bool ChegouAoDestino()
+    {
+        return !agente.pathPending &&
+               (!agente.hasPath || agente.remainingDistance <= 0.7f ||
+                agente.pathStatus == NavMeshPathStatus.PathInvalid);
+    }
+
+    private bool IrAte(Vector3 destino)
+    {
+        // Nunca envie a Maria para o corredor, mesmo quando estiver perseguindo.
+        float limiteDestinoX = Mathf.Max(0.1f, limiteLateralX - margemParaDestino);
+        destino.x = Mathf.Clamp(destino.x, -limiteDestinoX, limiteDestinoX);
+        destino.z = Mathf.Clamp(destino.z, limiteFrontalDaSalaZ + margemParaDestino,
+                                limiteFundoDaSalaZ - margemParaDestino);
+        if (NavMesh.SamplePosition(destino, out NavMeshHit hit, 1.6f, NavMesh.AllAreas) &&
+            Mathf.Abs(hit.position.x) <= limiteLateralX &&
+            hit.position.z >= limiteFrontalDaSalaZ &&
+            hit.position.z <= limiteFundoDaSalaZ)
+        {
+            agente.isStopped = false;
+            return agente.SetDestination(hit.position);
+        }
+        return false;
+    }
+
+    private void IniciarPatrulha()
+    {
+        estadoAtual = EstadoMaria.Patrulhando;
+        agente.speed = velocidadePatrulha;
+        if (pontosPatrulha != null && pontosPatrulha.Length > 0)
+        {
+            indicePatrulha %= pontosPatrulha.Length;
+            IrAte(pontosPatrulha[indicePatrulha]);
+        }
+    }
+
+    private void Capturar()
+    {
+        capturado = true;
+        if (agente.isOnNavMesh) agente.ResetPath();
+        if (scriptMovimento != null) scriptMovimento.enabled = false;
+        if (scriptEscalada != null) scriptEscalada.enabled = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Debug.Log("Maria capturou Scooby! Pressione R para tentar novamente.");
+    }
+
+    private void ReiniciarTentativa()
+    {
+        // Reinicia somente a tentativa. A bolinha ainda nao e coletavel nesta etapa.
+        if (controladorScooby != null) controladorScooby.enabled = false;
+        scooby.position = posicaoInicialScooby;
+        scooby.rotation = Quaternion.identity;
+        if (controladorScooby != null) controladorScooby.enabled = true;
+
+        if (scriptMovimento != null) scriptMovimento.enabled = true;
+        if (scriptEscalada != null) scriptEscalada.enabled = true;
+
+        if (agente.isOnNavMesh) agente.Warp(posicaoInicialMaria);
+        ultimaPosicaoScooby = scooby.position;
+        tempoSemEnxergar = 0f;
+        proximaPercepcao = Time.time + 1f;
+        capturado = false;
+        IniciarPatrulha();
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void OnGUI()
+    {
+        if (mostrarEstadoNaTela)
+        {
+            GUI.Box(new Rect(12, 12, 240, 54),
+                "MARIA: " + estadoAtual + "\n" +
+                (capturado ? "Capturou Scooby!" : "Evite fazer barulho!"));
+        }
+
+        if (capturado)
+        {
+            float largura = 340f;
+            float altura = 150f;
+            Rect painel = new Rect((Screen.width - largura) * 0.5f,
+                (Screen.height - altura) * 0.5f, largura, altura);
+            GUI.Box(painel, "MARIA PEGOU O SCOOBY!");
+            GUI.Label(new Rect(painel.x + 28, painel.y + 52, 310, 26),
+                "Pressione R para tentar novamente.");
+            if (GUI.Button(new Rect(painel.x + 85, painel.y + 98, 170, 32),
+                    "Recomecar (R)"))
+                ReiniciarTentativa();
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, alcanceVisao);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, alcanceCorrida);
+    }
+}

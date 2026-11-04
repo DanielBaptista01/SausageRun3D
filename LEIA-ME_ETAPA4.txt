@@ -1,0 +1,48 @@
+SAUSAGE RUN 3D - ETAPA 4 - INTELIGENCIA ARTIFICIAL DA MARIA
+Unity 6 (6000.6.6f1)
+
+ANTES DE COPIAR OS SCRIPTS:
+1) No Unity Editor: Window > Package Manager.
+2) Menu de pacotes: Unity Registry.
+3) Procure 'AI Navigation' e instale (linha 2.0.x).
+4) Espere a Unity concluir a instalacao.
+
+INSTALACAO:
+1) PARE o Play da Unity.
+2) Extraia o conteudo deste ZIP na pasta raiz do projeto:
+   D:\unity_games\SausageRun3D
+3) Verifique os arquivos:
+   Assets/_SausageRun3D/Scripts/Enemy/MariaAI.cs
+   Assets/Editor/SausageRunMariaSetup.cs
+4) Aguarde a compilacao dos scripts e confira se nao ha erros no Console.
+5) Abra a cena 'Sala' do projeto.
+6) Menu superior: Sausage Run > 2 - Configurar Maria IA.
+   A ferramenta vai:
+      - Criar um objeto Maria e aproveitar o marcador vermelho.
+      - Adicionar NavMeshAgent e MariaAI.
+      - Criar Sala_NavMesh, delimitar a sala e gerar a malha navegavel.
+7) Pressione Ctrl+S e depois Play.
+
+TESTE:
+- Maria deve caminhar pela sala, contornando obstaculos.
+- Se ela enxergar Scooby dentro da sala, deve perseguir.
+- Se Scooby passar correndo perto dela, ela deve investigar o barulho.
+- Atraves dos moveis, ela deve perder o contato visual.
+- Ao alcancar Scooby, aparece 'MARIA PEGOU O SCOOBY!'.
+- Pressione R para tentar novamente.
+- Ao sair para o corredor, Scooby esta seguro (Maria fica dentro da casa).
+
+SE A MARIA NAO SE MOVER:
+- Selecione Sala_NavMesh, procure o componente NavMesh Surface e clique Bake.
+- Selecione Maria: o componente NavMesh Agent deve estar sobre a area azul da Scene.
+- Confira se MariaAI > Scooby aponta para o objeto Scooby da Hierarchy.
+- Olhe o Console para avisos sobre NavMesh.
+- Se voce alterar significativamente os moveis:
+  Sausage Run > 3 - Regerar NavMesh da Sala.
+
+OBSERVACOES:
+- Nao modifique nem apague ScoobyController.cs ou ScoobyEscalada.cs.
+- O marcador vermelho vira apenas a representacao visual da Maria.
+- O campo de visao usa Raycast, considerando paredes e moveis com Collider.
+- A capturacao e reinicio sao provisoriamente controlados pela MariaAI.
+- A coleta da bolinha e a vitoria serao implementadas na proxima etapa.

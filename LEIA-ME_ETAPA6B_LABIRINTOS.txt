@@ -1,0 +1,59 @@
+SAUSAGE RUN 3D — ETAPA 6B (LABIRINTOS FECHADOS)
+
+Objetivo desta revisao:
+- ampliar a casa e o corredor
+- criar objetos que formam labirintos fechados
+- adicionar varios objetos realmente escalaveis
+- colocar um teto tampando tudo
+- representar a porta de grade com escada SUBINDO para a garagem
+- manter Scooby, Maria, bolinha, vitoria e perseguicao funcionando
+
+CONTEUDO DO PACOTE
+1) Assets/Editor/SausageRunExpansao6B_Labirintos.cs
+   - ferramenta do menu da Unity: Sausage Run > 6B - Expandir casa com labirintos fechados
+2) Assets/_SausageRun3D/Scripts/Player/ScoobyEscalada.cs
+   - versao ampliada do script de escalada, com suporte a varios objetos escalaveis extras
+
+IMPORTANTE
+- Este pacote deve ser aplicado depois das Etapas 1 a 6A.
+- O arquivo ScoobyEscalada.cs deve SUBSTITUIR o antigo no mesmo caminho.
+- Nao deixe duas copias da classe ScoobyEscalada no projeto.
+
+INSTALACAO
+1. Feche o modo Play.
+2. Faça backup do projeto.
+3. Extraia este pacote na raiz do projeto Unity, preservando a pasta Assets.
+4. Se solicitado, substitua o arquivo existente:
+   Assets/_SausageRun3D/Scripts/Player/ScoobyEscalada.cs
+5. Volte para a Unity e aguarde a compilacao.
+6. Abra a cena Sala.
+7. Execute no menu:
+   Sausage Run > 6B - Expandir casa com labirintos fechados
+
+O QUE A ETAPA FAZ
+- Sala passa a ter 18 x 14 m
+- Corredor passa a ter 18 x 4 m
+- Muros externos altos e corredor coberto
+- Teto na sala, corredor, area da garagem, banheirinho e lavanderia
+- Labirinto esquerdo de caixas
+- Labirinto central de estantes/bancos com plataforma elevada da bolinha
+- Labirinto direito com rota de escalada e obstaculos fechados
+- Varios objetos sao registrados como escalaveis para o Scooby
+- Maria recebe nova area de patrulha
+- NavMesh e reajustada para a sala ampliada
+
+TESTES RECOMENDADOS
+1. Andar pelo corredor coberto e conferir os muros altos.
+2. Ver a porta de grade e os degraus da garagem subindo.
+3. Entrar pela janela normalmente.
+4. Subir em bancos, pilhas e caixas com a tecla E.
+5. Alcançar a bolinha no labirinto central.
+6. Verificar se Maria patrulha e persegue dentro da sala.
+7. Voltar ao corredor e confirmar a vitoria.
+
+SE A MARIA FICAR PARADA
+- Selecione Sala_NavMesh e clique em Bake.
+
+SE O SCOOBY SO ESCALAR 3 OBJETOS
+- Confira se o novo ScoobyEscalada.cs realmente substituiu o antigo.
+- Se existirem duas copias da classe, a Unity dara erro ou continuara usando a configuracao errada.

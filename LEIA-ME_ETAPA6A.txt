@@ -1,0 +1,71 @@
+SAUSAGE RUN 3D - ETAPA 6A: CAMINHADA NATURAL
+Unity 6 / 6000.6.6f1
+
+Este pacote adiciona camera com:
+- Head bob visivel e suave (andar e correr);
+- Balanco lateral e inclinacao nas curvas;
+- FOV de 75 (normal) ate 81 (correndo);
+- Pequena descida e recuperacao apos aterrissar;
+- Respiracao discreta quando parado.
+
+PRECAUCAO
+1. Salve a cena e faca backup do projeto (ou commit no Git).
+2. SAIA do modo Play.
+3. NAO execute novamente '1 - Criar cenario inicial'.
+4. NAO apague ScoobyController, ScoobyEscalada ou os demais scripts.
+
+INSTALACAO
+1. Extraia este ZIP dentro da pasta raiz do projeto, por exemplo:
+   D:\unity_games\SausageRun3D
+2. Verifique se existem os arquivos:
+   Assets\_SausageRun3D\Scripts\Player\ScoobyCameraEffects.cs
+   Assets\Editor\SausageRunCamera6ASetup.cs
+3. Volte a Unity e aguarde a compilacao. Abra a cena Sala.
+4. Menu: Sausage Run > 6A - Melhorar caminhada do Scooby
+5. Na Hierarchy, verifique:
+   Scooby > CameraFX_Pivot > CameraScooby > FocinhoScooby_Provisorio
+6. Ctrl + S; Play; clique na Game; ande, corra e pule.
+
+O QUE A FERRAMENTA FAZ
+- Cria CameraFX_Pivot na posicao original da camera.
+- Move CameraScooby para dentro do pivot SEM apagar a camera.
+- Anexa ScoobyCameraEffects ao pivot.
+- Desativa apenas o componente antigo ScoobyCameraImersao na CameraScooby
+  (evita dois head bobs simultaneos). O focinho continua visivel.
+- Nao altera o ScoobyController, ScoobyEscalada, MariaAI, NavMesh ou bola.
+- Pode ser executada novamente sem criar pivots duplicados.
+
+VALORES INICIAIS
+- Bob andando: 0.025 m
+- Bob correndo: 0.045 m
+- Passos/segundo: 1.9 andando, 2.8 correndo
+- Inclinacao maxima: 1.5 graus
+- FOV: 75 normal / 81 correndo
+- Impacto ao pousar: 0.04 m
+
+AJUSTES NO INSPECTOR
+Selecione Scooby > CameraFX_Pivot e ajuste Scooby Camera Effects.
+Se desejar MAIS movimento, aumente Bob Andando para 0.03 e Bob Correndo
+para 0.05, aos poucos. Se causar desconforto, diminua os valores.
+
+TESTE
+- Parado: camera praticamente imovel, com respiracao muito leve.
+- Andando: sobe e desce suavemente.
+- Correndo: o balanco aumenta e o FOV abre gradualmente.
+- Girando: leve inclinacao nas curvas.
+- Pulando: apos aterrissar, camera desce um pouco e volta.
+- Escalando: efeito de passos diminui, sem interferir no movimento da escalada.
+- Pegando bolinha, fugindo e vencendo: fluxo anterior continua igual.
+
+DESFAZER (se necessario)
+- Desative ScoobyCameraEffects no CameraFX_Pivot.
+- Opcional: reative ScoobyCameraImersao na CameraScooby para voltar ao efeito antigo.
+- Para restaurar hierarquia, tire CameraScooby de CameraFX_Pivot e torne-a
+  filha direta de Scooby; posicao local (0,0.48,0), rotacao (0,0,0).
+- Apague CameraFX_Pivot somente DEPOIS de reparentar CameraScooby.
+
+NOTA
+Os scripts foram preparados com base no ScoobyController e ScoobyEscalada
+que foram entregues nas etapas anteriores. Nao foi executado teste Play
+neste ambiente; valide na sua cena e informe mensagens da aba Console
+caso apareca algum erro.

@@ -1,0 +1,51 @@
+SAUSAGE RUN 3D — ETAPA 3: ESCALADA E JANELA
+
+Objetivo: subir na caixa externa, no peitoril da janela e depois
+voltar para o corredor. Esta etapa NAO altera o ScoobyController.
+
+1. Feche o Play Mode antes de modificar a cena.
+2. Extraia este ZIP na RAIZ da pasta do projeto Unity,
+   por exemplo: D:\unity_games\SausageRun3D\
+3. No Unity, selecione Scooby na Hierarchy.
+4. Add Component > ScoobyEscalada.
+5. Expanda SausageRun_Prototipo > 04_Moveis_e_obstaculos e
+   SausageRun_Prototipo > 02_Paredes para localizar:
+   - o cubo da caixa externa, em frente a janela;
+   - o cubo da caixa interna, atras da janela;
+   - o cubo/segmento inferior da janela (peitoril).
+6. Arraste CADA OBJETO da Hierarchy ao campo correspondente:
+   - Caixa Externa
+   - Caixa Interna
+   - Peitoril Janela
+   Os objetos devem ter Box Collider. Voce pode arrastar o
+   GameObject, e o Inspector referencia seu componente Collider.
+7. Salve (Ctrl+S) e entre no Play Mode.
+8. Aproxime-se da caixa externa e pressione E para subir.
+9. Aproximando-se do peitoril e pressionando E, Scooby sobe na janela.
+10. Use W para entrar na sala. Na volta, suba na caixa interna,
+    depois no peitoril e caminhe para o corredor.
+
+O script calcula automaticamente a altura do topo pelos bounds do Collider.
+Assim, nao exige criar pontos vazios nem digitar coordenadas dos alvos.
+
+Valores iniciais no Inspector:
+Distancia Maxima 0.95
+Altura Maxima 1.0
+Altura Minima 0.12
+Altura Minima Para Janela 0.30
+Duracao Escalada 0.40
+Arco Escalada 0.30
+Folga Sobre Plataforma 0.04
+
+IMPORTANTE:
+- Certifique-se que o objeto de baixo da janela nao e a parede
+  inteira. Arraste apenas o segmento inferior (peitoril).
+- Se E nao funcionar, confira o Input System e referencias do Inspector.
+- A escalada e um prototipo com deslocamento animado e colisao
+  temporariamente desligada. Funciona para caixas e peitoril estaticos,
+  mas ainda nao e um sistema universal de parkour.
+- Se o jogador ficar preso ao chegar no peitoril, revise a altura da
+  abertura: deve sobrar pelo menos 0.65m acima da parte inferior.
+- Se a caixa tiver um topo alto demais, aumente Altura Maxima ou
+  reduza sua altura no Transform.
+- Nao coloque este script na CameraScooby: adicione em Scooby.

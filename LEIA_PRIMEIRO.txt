@@ -1,0 +1,33 @@
+SAUSAGE RUN 3D - ETAPA 1: CENARIO
+================================
+Unity 6 / Universal 3D (URP)
+
+1) Feche a Unity ou mantenha-a aberta.
+2) Copie a pasta "Assets" deste ZIP para a raiz do seu projeto
+   (por exemplo: D:\unity_games\SausageRun3D\).
+   A unica adicao sera Assets/Editor/SausageRunSceneBuilder.cs.
+3) Volte para a Unity e aguarde a compilacao do script.
+4) Na barra superior, clique em:
+   Sausage Run > 1 - Criar cenario inicial
+5) O script cria a estrutura da sala, corredor, porta/janela,
+   portas laterais fechadas, sofa, mesa, estante, caixas,
+   bolinha e marcadores de Scooby e Maria.
+6) A cena e salva automaticamente em:
+   Assets/_SausageRun3D/Scenes/Sala.unity
+7) Confira o resultado nas abas Scene e Game.
+
+IMPORTANTE
+- Este ZIP e a primeira etapa, nao o jogo completo.
+- Scooby e Maria ainda sao marcadores estaticos.
+- A proxima etapa e programar os controles FPS do Scooby,
+  a escalada/janela e a IA da Maria.
+- Se executar a opcao do menu novamente, o script perguntara
+  antes de recriar e apagar a hierarquia gerada.
+- O script altera a Main Camera provisoriamente para mostrar a sala.
+
+PLANTA
+- Sala: 12 x 10 m (X -6..6; Z -5..5)
+- Corredor: a frente (Z -8..-5)
+- Porta frontal: esquerda, fechada
+- Janela: direita, aberta para pular
+- Duas portas laterais: proximas a parede do fundo, fechadas

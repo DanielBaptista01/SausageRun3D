@@ -1,0 +1,85 @@
+SAUSAGE RUN 3D - ETAPA 6B - EXPANSAO DA CASA
+Unity 6 (6000.6.6f1) + Universal 3D + AI Navigation
+
+O QUE ESTE PACOTE FAZ
+----------------------
+- Expande a sala de 12x10 m para 18x14 m e altura das paredes para 3,3 m.
+- Expande o corredor para 18x4 m e troca bordas de 0,6 m por muros de 4,4 m.
+- Mantem a parede frontal em Z=-5: porta principal, janela (X=2.6),
+  peitoril e caixas de escalada continuam nos MESMOS objetos.
+- Reposiciona somente paredes lateral e de fundo, com portas laterais fechadas.
+- Adiciona sofa L, rack, TV, mesa de jantar, cadeiras, poltrona, aparador,
+  banco com espaco para esconder, caixas, vasos e objetos decorativos.
+- Na ponta esquerda do corredor (X=-9): grade fechada, escada para garagem.
+- Na ponta direita (X=+9): banheirinho fechado e grade da lavanderia.
+- Amplia limites e rota de patrulha da Maria, e area de vitoria do corredor.
+- Exclui o piso do corredor da NavMesh e tenta recalcular a NavMesh da sala.
+
+IMPORTANTE ANTES DE INSTALAR
+---------------------------
+1) FECHE O PLAY e SALVE a cena Sala (Ctrl+S).
+2) Faca um backup completo da pasta do projeto por seguranca.
+3) Extraia este ZIP na RAIZ do projeto: D:\unity_games\SausageRun3D
+   mantendo a pasta Assets/ exatamente como veio no arquivo.
+4) Quando o Windows perguntar, SUBSTITUA SOMENTE o arquivo MariaAI.cs.
+   Nao crie uma SEGUNDA copia do arquivo em outro local do projeto.
+   A versao 6B conserva os estados atuais e so deixa limites e rota
+   da patrulha compativeis com uma sala maior.
+5) Nao substitua ScoobyController.cs, ScoobyEscalada.cs,
+   ScoobyCameraEffects.cs ou SausageRunGameManager.cs.
+
+INSTALACAO
+----------
+Abra a Unity e aguarde o fim da compilacao.
+Na cena Sala, menu superior:
+Sausage Run > 6B - Expandir casa e corredor
+Confirme no dialogo.
+
+O script salva automaticamente uma copia da cena original em:
+Assets/_SausageRun3D/Scenes/Sala_BACKUP_Antes6B.unity
+(Se ja houver, cria um nome unico com sufixo.)
+
+Se a geracao da NavMesh falhar, selecione Sala_NavMesh,
+no Inspector clique Bake, e salve a cena (Ctrl+S).
+
+IMPORTANTISSIMO: NAO EXECUTE NOVAMENTE
+Sausage Run > 1 - Criar cenario inicial
+porque o comando da Etapa 1 apaga e recria a raiz de geometria.
+
+TESTES DE ACEITACAO
+-------------------
+[ ] Scooby inicia no corredor, proximo da janela X=2.6.
+[ ] Escalada da Caixa_Externa_Janela > peitoril > sala funciona.
+[ ] Coleta da bolinha permanece com a tecla E.
+[ ] Maria se movimenta pela sala expandida e evita moveis.
+[ ] Maria nao consegue entrar no corredor nem na garagem.
+[ ] Com a bolinha, Scooby vence quando volta ao corredor.
+[ ] Perto das extremidades, visualizam-se grade, banheiro e lavanderia.
+[ ] Abaixos de bancos / mesas existem espacos para Scooby se esconder.
+
+SE ALGO SAIR ERRADO
+-------------------
+- Menu 6B nao aparece: confira Console e se AI Navigation esta instalado.
+- Erro "MariaAI ... limiteFundoDaSalaZ": MariaAI.cs nao foi substituido
+  ou existe duplicata da classe em Assets. Utilize somente o arquivo 6B.
+- Maria parada: Sala_NavMesh > Bake, confira se existe superficie azul
+  NA SALA e se Maria esta sobre ela (nao no corredor).
+- Texturas rosa: use o template Universal 3D e confira URP configurada.
+- Para voltar ao estado anterior, abra a cena
+  Sala_BACKUP_Antes6B.unity e depois salve-a como Sala.unity. Caso precise,
+  o arquivo MariaAI_BACKUP_ETAPA4.txt no ZIP contem a versao anterior.
+- Se o projeto contiver alteracoes manuais nos objetos gerados na Etapa 1,
+  revise as posicoes apos rodar o construtor; esta expansao assume a planta
+  gerada por SausageRunSceneBuilder.cs.
+
+PERFIS DE TESTE
+---------------
+Sala atual: x entre -9 e 9; z entre -5 e 9.
+Corredor atual: x entre -9 e 9; z entre -9 e -5.
+Janela: centro x=2.6, z=-5; abertura y=0.85 ate 2.10.
+Porta principal: centro x=-3.9, z=-5.
+Grade da garagem: ponta esquerda x=-9 (fechada).
+Banheirinho/lavanderia: ponta direita x=+9 (cenograficos).
+
+Observacao: pacote foi preparado por analise do codigo das etapas 1 a 6A;
+a execucao real no Editor Unity deve ser validada localmente.

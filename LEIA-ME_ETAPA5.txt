@@ -1,0 +1,38 @@
+SAUSAGE RUN 3D — ETAPA 5: BOLINHA + VITORIA
+Unity 6 | complemento para as etapas 1, 2, 3 e 4
+
+1. PARE o modo Play da Unity.
+2. Extraia o ZIP na raiz do projeto (por exemplo D:\unity_games\SausageRun3D).
+   Preserve a pasta Assets; nao abra um novo projeto.
+3. Volte para a Unity e aguarde a compilacao.
+4. Abra a cena Sala.
+5. No menu superior, execute:
+   Sausage Run > 4 - Configurar bolinha e vitoria
+6. Na Hierarchy sera criado SausageRun_Jogo e a Bolinha recebera
+   o componente BolinhaColetavel. Os scripts do Scooby e da Maria
+   NAO sao substituidos.
+7. Pressione Play.
+
+TESTE
+- Entre pela janela.
+- Procure a bolinha amarela (proxima ao canto direito do fundo).
+- Pressione E quando a mensagem '[E] Pegar bolinha' aparecer.
+- A bolinha desaparece do chao e aparece pequena na camera.
+- Volte pela janela com a bolinha. Ao entrar no corredor, a tela
+  de vitoria deve aparecer.
+- Pressione R ou clique em 'Jogar novamente'.
+- Teste tambem a derrota: pegue a bolinha, deixe Maria capturar,
+  pressione R e confirme que a bolinha voltou ao lugar original.
+
+ATENCAO
+- O script de escalada tambem utiliza E. Aproximar-se de uma caixa
+  e da bolinha ao mesmo tempo pode acionar as duas interacoes;
+  nesta fase elas estao separadas no cenario.
+- O R de derrota ja e tratado pelo MariaAI da etapa 4. O R de
+  vitoria e tratado pelo gerenciador desta etapa.
+- Se o menu '4 - Configurar bolinha e vitoria' nao aparecer,
+  abra a aba Console e confira erros vermelhos.
+- Se a vitoria nao ocorrer, confira se Scooby retornou ao chao
+  do corredor (Z <= -5.4) com a bolinha coletada.
+- Nao execute '1 - Criar cenario inicial' novamente: isso apaga
+  os objetos do cenario e exige reconfigurar algumas referencias.

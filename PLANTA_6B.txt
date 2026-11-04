@@ -1,0 +1,22 @@
+PLANTA 6B - top-down (vista de cima), medidas em Unity units
+
+                fundo da sala / Z=+9
+                  PAREDE DO FUNDO
+     X=-9 +----------------------------+ X=+9
+          | Porta lateral      Porta  |
+          |           TV/Rack         |
+          | sofa L             sofa   |
+          |      bancos / labirintos  |
+          |  moveis originais         |
+          | Sala expandida 18x14      |
+          |                           |
+          +--[porta]-------[janela]---+ Z=-5
+          |   CORREDOR / 18x4         |
+    grade |                           | banheiro
+    e     |                           | lavanderia
+  escada  |    Scooby (X=2.5 Z=-7.1)  |
+    X=-9  +===========================+ X=+9
+                    muro 4.4m / Z=-9
+
+JANELA ORIGINAL: X=2.6. Caixa externa e caixa interna NAO foram alteradas.
+Grade/banheiro/lavanderia sao apenas cenograficos e permanecem bloqueados.

@@ -1,0 +1,107 @@
+SAUSAGE RUN 3D - ETAPA 7: CINCO BISCOITOS + DESAFIOS DE SALA
+Unity 6 / URP / AI Navigation
+
+O QUE ESTA IMPLEMENTADO
+-----------------------
+A coleta da bolinha so fica disponivel DEPOIS que Scooby pegar os cinco biscoitos.
+Os cinco desafios sao construidos com moveis que pertencem a uma sala:
+
+1) Sofa e aparador: passar por um tunel com teto baixo para entrar num recinto
+   cercado por sofa, aparador e estantes; biscoito escondido la dentro.
+2) Mesa de jantar: subir na cadeira, depois no tampo da mesa; biscoito elevado.
+3) Forte de almofadas: corredor em zigue-zague com paredes de sofa, estantes,
+   almofadas e uma unica entrada; biscoito no fundo.
+4) Caixas e estantes: escalada em multiplas etapas para alcancar uma plataforma
+   alta e pegar o biscoito.
+5) Rack/TV: passar por baixo do rack para entrar num esconderijo atras da TV.
+
+Bolinha: fica em um baú com grade fechada. Ao pegar 5/5 biscoitos, a grade
+abre e a interacao original da bolinha fica disponivel. Depois, a vitoria
+continua exigindo retornar pela janela ao corredor.
+
+A cena tambem ganha um teto COMPLETO com iluminacao interior. Se o projeto
+usa a versao antiga 06B_Expansao, os degraus da garagem sao invertidos para
+SUBIR, como ocorre na casa real.
+
+COMPATIBILIDADE
+--------------
+- Funciona com os grupos 06B_Expansao OU 06B_LabirintosFechados.
+- Nao execute novamente a Etapa 1 ou a Etapa 6B apos instalar esta etapa.
+- Mantem as caixas da janela e todas as referencias originais da escalada.
+- Mantem ScoobyController, MariaAI, BolinhaColetavel e SausageRunGameManager.
+- Substitui apenas ScoobyEscalada.cs, preservando a escalada existente e
+  adicionando suporte a diversos objetos escalaveis extras.
+- Tem um construtor automatico idempotente, com backup antes de modificar.
+
+INSTALACAO
+----------
+1. Pare o modo Play e salve Sala (Ctrl + S).
+2. Faça uma copia adicional do projeto completo.
+3. Extraia o ZIP na raiz do projeto, por exemplo D:\unity_games\SausageRun3D.
+4. Se Windows perguntar, SUBSTITUA somente:
+   Assets/_SausageRun3D/Scripts/Player/ScoobyEscalada.cs
+   NAO crie uma copia com o mesmo nome em outra pasta.
+5. Aguarde compilar na Unity e confira se nao ha erros no Console.
+6. Abra a cena Sala.
+7. Clique em:
+   Sausage Run > 7 - Criar desafios e 5 biscoitos
+8. Confirme a criacao. A cena sera salva e recebera um backup automatico.
+
+NOVA HIERARCHY
+--------------
+SausageRun_Prototipo
+  07_Desafio_Biscoitos
+    01_Sofa_e_Tunel
+    02_Mesa_de_Jantar
+    03_Forte_de_Almofadas
+    04_Estantes_e_Caixas
+    05_Rack_e_Passagem_Secreta
+    06_Bolinha_Trancada
+    07_Biscoitos
+    08_Tetos
+    09_Iluminacao
+    10_Objetos_Extras_Sala
+
+O COMPONENTE DesafioBiscoitos fica no objeto 07_Desafio_Biscoitos.
+Voce pode expandir 07_Biscoitos e localizar os cinco colecionaveis.
+
+TESTE NO PLAY
+-------------
+1. Entrar pela janela.
+2. Buscar os cinco biscoitos (coleta automatica por proximidade).
+3. Conferir HUD 0/5 ... 5/5.
+4. Antes de 5/5: grade permanece fechada, nao permite pegar a bolinha.
+5. Depois de 5/5: grade abre e bolinha fica coletavel com E.
+6. Voltar ao corredor e vencer.
+7. Ser capturado pela Maria: os cinco biscoitos voltam aos lugares.
+
+PARA INSPECIONAR A SALA NO EDITOR
+---------------------------------
+O teto agora cobre tudo de verdade. Na aba Scene, use o icone de visibilidade
+(olho) ao lado de 08_Tetos na Hierarchy para ESCONDER APENAS NA SCENE VIEW,
+sem desativar o GameObject. Assim voce ve os desafios pelo alto.
+
+SE A MARIA NAO PATRULHAR
+-----------------------
+Selecione Sala_NavMesh e clique Bake. Se continuar parada, mande print do
+Inspector e Console. Alguns recintos estreitos foram feitos apenas para
+Scooby: a Maria continua nas rotas abertas da sala.
+
+SE ALGUMA PLATAFORMA NAO ESCALAR
+-------------------------------
+Selecione Scooby e veja o componente Scooby Escalada. Confirme que o campo
+'Objetos Escalaveis Extras' contem varios colliders. Pressione E quando
+estiver perto da plataforma; algumas exigem subir primeiro numa caixa baixa.
+
+SE O MENU NAO APARECER
+----------------------
+Confira o arquivo:
+Assets/Editor/SausageRunDesafios7Setup.cs
+
+Se a Unity exibir erros vermelhos no Console, envie o texto dos erros.
+
+NOTA
+----
+O sistema foi preparado e revisado a partir dos scripts das etapas anteriores,
+mas ainda precisa ser testado na Unity do seu computador. Alguns posicionamentos
+podem precisar de ajustes finos depois do teste da rota completa.
